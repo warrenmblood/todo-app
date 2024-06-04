@@ -5,7 +5,7 @@ function Task({ task, toggleComplete, togglePriority, updateTask, deleteTask }) 
     const editRef = useRef(null);
 
     const handleComplete = () => toggleComplete(task.id);
-    const handlePriority = () => togglePriority(task);
+    const handlePriority = () => togglePriority(task.id);
     const handleEdit = () => setEditing(true);
 
     useEffect(() => {
@@ -21,12 +21,7 @@ function Task({ task, toggleComplete, togglePriority, updateTask, deleteTask }) 
         setEditing(false);
     };
 
-    const handleEditChange = (event) => {
-        const updatedTask = task;
-        updatedTask.title = event.target.value;
-        updateTask(task.id, updatedTask);
-    };
-
+    const handleEditChange = (event) => updateTask(task.id, event.target.value);
     const handleDelete = () => deleteTask(task.id);
 
     return (

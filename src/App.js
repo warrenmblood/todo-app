@@ -13,51 +13,65 @@ const App = () => {
     .then(res => res.json())
     .then(data => setTasks(data));
   }, []);
-
-  const handleSubmit = (tasksCopy) => {
-    fetch("/api/items", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(tasksCopy)
-    })
-    .then(res => res.json())
-    .then(data => console.log(data));
-    
-    setTasks(tasksCopy);
-  };
   
   const addTask = (task) => {
-    const tasksCopy = [...(tasks ?? [])];  // 1. Take a copy of the current state
-    tasksCopy.push(task); // 2. Add new task to copy
-    handleSubmit(tasksCopy);  // 3. Set state to copy
-  };
-
-  const toggleComplete = (id) => {
-    const tasksCopy = [...(tasks ?? [])];
-    const index = tasksCopy.findIndex((item) => item.id === id);
-    tasksCopy[index].completed = !tasksCopy[index].completed;
-    handleSubmit(tasksCopy);
-  };
-
-  const togglePriority = (task) => {
-    let tasksCopy = [...(tasks ?? [])];
-    tasksCopy = tasksCopy.filter((item) => task.id !== item.id);
-    task.priority = !task.priority;
-    task.priority ? tasksCopy.unshift(task) : tasksCopy.push(task);
-    handleSubmit(tasksCopy);
-  };
-
-  const updateTask = (id, updatedTask) => {
-    const tasksCopy = [...(tasks ?? [])];
-    const index = tasksCopy.findIndex((item) => item.id === id);
-    tasksCopy[index] = updatedTask;
-    handleSubmit(tasksCopy);
+    const request = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(task)
+    };
+    fetch("/api/items/post", request)
+      .then(res => res.json())
+      .then(data => setTasks(data));
   };
 
   const deleteTask = (id) => {
-    let tasksCopy = [...(tasks ?? [])];
-    tasksCopy = tasksCopy.filter((task) => id !== task.id);
-    handleSubmit(tasksCopy);
+    const request = {
+      method: "DELETE",
+    };
+    fetch(`api/items/delete?id=${id}`, request)
+      .then(res => res.json())
+      .then(data => setTasks(data));
+  };
+
+  const toggleComplete = (id) => {
+    const taskToUpdate = [...tasks].find((task) => task.id === id);
+    taskToUpdate.completed = !taskToUpdate.completed;
+    const newProperty = { 'completed' : taskToUpdate.completed };
+    const request = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newProperty)
+    };
+    fetch(`/api/items/patch?id=${id}`, request)
+      .then(res => res.json())
+      .then(data => setTasks(data));
+  };
+
+  const togglePriority = (id) => {
+    const taskToUpdate = [...tasks].find((task) => task.id === id);
+    taskToUpdate.priority = !taskToUpdate.priority;
+    const newProperty = { 'priority' : taskToUpdate.priority };
+    const request = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newProperty)
+    };
+    fetch(`/api/items/patch?id=${id}`, request)
+      .then(res => res.json())
+      .then(data => setTasks(data));
+  };
+
+  const updateTask = (id, updatedTitle) => {
+    const newProperty = { 'title' : updatedTitle };
+    const request = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newProperty)
+    };
+    fetch(`/api/items/patch?id=${id}`, request)
+      .then(res => res.json())
+      .then(data => setTasks(data));
   };
 
   return (
